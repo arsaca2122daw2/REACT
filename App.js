@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto"/>
-    </View>
-  );
+import { M06_Home } from "./app/views/M06_Home_routing";
+import { M06_Detalls } from "./app/views/M06_Detalls_routing";
+import { M07_Camera } from "./app/views/M07_Camera";
+import { M08_Mapes } from "./app/views/M08_Mapes";
+import { M09_Sqlite } from "./app/views/M09_Sqlite";
+/**
+ * Modificacions al component principal d'entrada de React
+ * per incloure encaminaments, però no components
+ * @version 1.0 28.03.2020
+ * @author sergi.grau@fje.edu
+ */
+
+const Stack = createStackNavigator();
+
+function App() {
+	return (
+		<NavigationContainer>
+			<Stack.Navigator initialRouteName="Home">
+				<Stack.Screen name="Home" component={M06_Home} />
+				<Stack.Screen name="Detall" component={M06_Detalls} />
+				<Stack.Screen name="Camera" component={M07_Camera} />
+				<Stack.Screen name="Mapes" component={M08_Mapes} />
+				<Stack.Screen name="SQLite" component={M09_Sqlite} />
+			</Stack.Navigator>
+		</NavigationContainer>
+	);
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
