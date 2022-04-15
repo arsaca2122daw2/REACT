@@ -1,12 +1,6 @@
 import React from "react";
-import { StyleSheet, Dimensions, Text, View } from "react-native";
+import { StyleSheet, Dimensions, Text, View, Pressable, Image } from "react-native";
 import MapView from "react-native-maps";
-/**
- * Classe que hereta de Component i que implementa un component
- * per a visualitzar mapes, Fa servir routing
- * @version 1.0 05.04.2020
- * @author sergi.grau@fje.edu
- */
 
 const styles = StyleSheet.create({
 	container: {
@@ -19,6 +13,7 @@ const styles = StyleSheet.create({
 		width: Dimensions.get("screen").width,
 		height: Dimensions.get("screen").height,
 	},
+	buttons: { width: 100, height: 100, padding: 10, borderRadius: 100, backgroundColor: "white" },
 });
 const mode = "driving"; // 'walking';
 
@@ -57,14 +52,7 @@ export class M08_Mapes extends React.Component {
 						title={"sortida"}
 						description={"punt A"}
 					/>
-					<MapView.Marker
-						coordinate={{
-							latitude: this.coords[1].lat,
-							longitude: this.coords[1].lng,
-						}}
-						title={"arribada"}
-						description={"punt B"}
-					/>
+
 					<MapView.Marker
 						coordinate={{
 							latitude: this.coords[1].lat,
