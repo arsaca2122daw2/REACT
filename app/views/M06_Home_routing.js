@@ -57,7 +57,7 @@ export class M06_Home extends React.Component {
 							<Text style={estils.botontitol}>Mapa</Text>
 						</Pressable>
 						<View style={{ flex: 1, justifyContent: "center", marginTop: -150 }}>
-							<Pressable style={estils.botones} title="Ayuda" onPress={() => this.props.navigation.navigate("SQLite")}>
+							<Pressable style={estils.botones} title="Ayuda" onPress={() => this.props.navigation.navigate("Ayuda")}>
 								<Text style={estils.botontitol}>Ayuda</Text>
 							</Pressable>
 						</View>

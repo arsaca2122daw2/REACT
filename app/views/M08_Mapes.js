@@ -13,7 +13,12 @@ const styles = StyleSheet.create({
 		width: Dimensions.get("screen").width,
 		height: Dimensions.get("screen").height,
 	},
-	buttons: { width: 100, height: 100, padding: 10, borderRadius: 100, backgroundColor: "white" },
+	buttons: { top: -100, width: 50, height: 50, borderRadius: 100, backgroundColor: "white", position: "absolute" },
+
+	camara: {
+		top: 12,
+		left: 13,
+	},
 });
 const mode = "driving"; // 'walking';
 
@@ -31,6 +36,7 @@ export class M08_Mapes extends React.Component {
 	constructor(props) {
 		super(props);
 	}
+
 	render() {
 		return (
 			<View style={styles.container}>
@@ -51,7 +57,7 @@ export class M08_Mapes extends React.Component {
 						}}
 						title={"sortida"}
 						description={"punt A"}
-					/>
+					></MapView.Marker>
 
 					<MapView.Marker
 						coordinate={{
@@ -78,6 +84,21 @@ export class M08_Mapes extends React.Component {
 						strokeWidth={6}
 					/>
 				</MapView>
+				<View style={{ position: "absolute", top: 730, left: 20, right: 0, bottom: 0 }}>
+					<Pressable style={styles.buttons} onPress={() => this.props.navigation.navigate("Camara")}>
+						<Image style={styles.camara} source={require("../../assets/camara.png")}></Image>
+					</Pressable>
+				</View>
+				<View style={{ position: "absolute", top: 730, left: 20, right: 0, bottom: 0 }}>
+					<Pressable style={styles.buttons} onPress={() => this.props.navigation.navigate("Camera")}>
+						<Image style={styles.camara} source={require("../../assets/camara.png")}></Image>
+					</Pressable>
+				</View>
+				<View style={{ position: "absolute", top: 730, left: 324, right: 0, bottom: 0 }}>
+					<Pressable style={styles.buttons} onPress={() => this.props.navigation.navigate("Ayuda")}>
+						<Image style={styles.camara} source={require("../../assets/help.png")}></Image>
+					</Pressable>
+				</View>
 			</View>
 		);
 	}

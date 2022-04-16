@@ -7,6 +7,7 @@ import { M06_Detalls } from "./app/views/M06_Detalls_routing";
 import { M07_Camera } from "./app/views/M07_Camera";
 import { M08_Mapes } from "./app/views/M08_Mapes";
 import { M09_Sqlite } from "./app/views/M09_Sqlite";
+import { M10_Ayuda } from "./app/views/M10_Ayuda";
 /**
  * Modificacions al component principal d'entrada de React
  * per incloure encaminaments, però no components
@@ -25,6 +26,7 @@ function App() {
 				<Stack.Screen name="Camera" component={M07_Camera} />
 				<Stack.Screen name="Mapes" component={M08_Mapes} />
 				<Stack.Screen name="SQLite" component={M09_Sqlite} />
+				<Stack.Screen name="Ayuda" component={M10_Ayuda} />
 			</Stack.Navigator>
 		</NavigationContainer>
 	);
