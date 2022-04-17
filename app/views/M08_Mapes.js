@@ -1,6 +1,9 @@
-import React from "react";
-import { StyleSheet, Dimensions, Text, View, Pressable, Image } from "react-native";
+import React, { Component } from "react";
+import { StyleSheet, Dimensions, Text, View, Pressable, Image, Alert } from "react-native";
+import { Callout } from "react-native-maps";
+import Dialog from "react-native-dialog";
 import MapView from "react-native-maps";
+import * as SQLite from "expo-sqlite";
 
 const styles = StyleSheet.create({
 	container: {
@@ -19,6 +22,12 @@ const styles = StyleSheet.create({
 		top: 12,
 		left: 13,
 	},
+	titulo: {
+		fontWeight: "bold",
+	},
+	description: {
+		color: "grey",
+	},
 });
 const mode = "driving"; // 'walking';
 
@@ -33,6 +42,31 @@ export class M08_Mapes extends React.Component {
 			lng: 2.175007,
 		},
 	];
+
+	state = {
+		dialogVisible: false,
+	};
+
+	showDialog = () => {
+		this.setState({ dialogVisible: true });
+	};
+
+	handleCancel = () => {
+		this.setState({ dialogVisible: false });
+	};
+
+	handleSave = () => {
+		db = SQLite.openDatabase("db.db");
+		db.transaction((tx) => {
+			tx.executeSql("create table if not exists marcador (id integer primary key not null, titulo text, descripcion text);");
+			db.transaction((tx) => {
+				tx.executeSql("insert into marcador (titulo, descripcion) values ['tituloprueba']", ["prueba"]);
+				tx.executeSql("select * from marcador", [], (_, { rows }) => console.log(JSON.stringify(rows)));
+			});
+		});
+		this.setState({ dialogVisible: false });
+	};
+
 	constructor(props) {
 		super(props);
 	}
@@ -57,16 +91,30 @@ export class M08_Mapes extends React.Component {
 						}}
 						title={"sortida"}
 						description={"punt A"}
-					></MapView.Marker>
+					>
+						<Callout onPress={() => this.props.navigation.navigate("Camera")}>
+							<Text style={{ width: 30, marginBottom: 7, height: 30 }}>
+								<Image style={{ width: 20, height: 20 }} source={require("../../assets/camara.png")}></Image>
+							</Text>
+							<Text style={styles.titulo}>Restaurante Juan PaTan</Text>
+							<Text style={styles.description}>12 Carrer Comptal</Text>
+						</Callout>
+					</MapView.Marker>
 
 					<MapView.Marker
 						coordinate={{
 							latitude: this.coords[1].lat,
 							longitude: this.coords[1].lng,
 						}}
-						title={"arribada"}
-						description={"punt B"}
-					/>
+					>
+						<Callout onPress={() => this.props.navigation.navigate("Camera")}>
+							<Text style={{ width: 30, marginBottom: 7, height: 30 }}>
+								<Image style={{ width: 20, height: 20 }} source={require("../../assets/camara.png")}></Image>
+							</Text>
+							<Text style={styles.titulo}>Centro Comercial KYS</Text>
+							<Text style={styles.description}>2 Carrer de Colom</Text>
+						</Callout>
+					</MapView.Marker>
 					<MapView.Polyline
 						coordinates={[
 							{ latitude: 41.390205, longitude: 2.174007 },
@@ -85,14 +133,17 @@ export class M08_Mapes extends React.Component {
 					/>
 				</MapView>
 				<View style={{ position: "absolute", top: 730, left: 20, right: 0, bottom: 0 }}>
-					<Pressable style={styles.buttons} onPress={() => this.props.navigation.navigate("Camara")}>
-						<Image style={styles.camara} source={require("../../assets/camara.png")}></Image>
+					<Pressable style={styles.buttons} onPress={this.showDialog}>
+						<Image style={styles.camara} source={require("../../assets/add.png")}></Image>
 					</Pressable>
-				</View>
-				<View style={{ position: "absolute", top: 730, left: 20, right: 0, bottom: 0 }}>
-					<Pressable style={styles.buttons} onPress={() => this.props.navigation.navigate("Camera")}>
-						<Image style={styles.camara} source={require("../../assets/camara.png")}></Image>
-					</Pressable>
+					<Dialog.Container visible={this.state.dialogVisible}>
+						<Dialog.Title>Añade un nuevo marcador</Dialog.Title>
+						<Dialog.Input placeholder="Escribe aquí el título" />
+						<Dialog.Input placeholder="Escribe aquí una descripción" />
+						<Dialog.Description>Escribe un título y una descripción para guarlarlo.</Dialog.Description>
+						<Dialog.Button label="Cancel" onPress={this.handleCancel} />
+						<Dialog.Button label="Guardar" onPress={this.handleSave} />
+					</Dialog.Container>
 				</View>
 				<View style={{ position: "absolute", top: 730, left: 324, right: 0, bottom: 0 }}>
 					<Pressable style={styles.buttons} onPress={() => this.props.navigation.navigate("Ayuda")}>

@@ -50,7 +50,7 @@ export class M10_Ayuda extends React.Component {
 					<Text style={estils.titulos}>¿Como hacer una foto?</Text>
 					<Text style={estils.texto}>Para añadir un marcador deberás fijarte abajo a la izquierda donde verás un botón con el simbolo de una camara. Al hacer click te redirijirá a la camara</Text>
 					<Text style={estils.titulos}>¿Donde se guarda?</Text>
-					<Text style={estils.texto}>Todo esto se guarda en Sqlite</Text>
+					<Text style={estils.texto}>Todo esto se guarda en Sqlite. Tus marcadores guardados por ahora son: </Text>
 				</View>
 			</View>
 		);
