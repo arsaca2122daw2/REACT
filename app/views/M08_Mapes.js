@@ -45,6 +45,13 @@ export class M08_Mapes extends React.Component {
 
 	state = {
 		dialogVisible: false,
+		newMarker: {
+			longitude: 0,
+			latitude: 0,
+			title: "",
+			description: "",
+		},
+		arrayMarkers: [],
 	};
 
 	showDialog = () => {
@@ -60,11 +67,23 @@ export class M08_Mapes extends React.Component {
 		db.transaction((tx) => {
 			tx.executeSql("create table if not exists marcador (id integer primary key not null, titulo text, descripcion text);");
 			db.transaction((tx) => {
-				tx.executeSql("insert into marcador (titulo, descripcion) values ['tituloprueba']", ["prueba"]);
+				tx.executeSql("insert into marcador (titulo, descripcion) values (?,?)", [this.state.newMarker.title, this.state.newMarker.description]);
 				tx.executeSql("select * from marcador", [], (_, { rows }) => console.log(JSON.stringify(rows)));
 			});
 		});
-		this.setState({ dialogVisible: false });
+		this.setState({ dialogVisible: false, arrayMarkers: [...this.state.arrayMarkers, this.state.newMarker] });
+	};
+
+	handleClick = (marker) => {
+		this.setState({ dialogVisible: true, newMarker: marker.marker });
+	};
+
+	handleInputTitleChange = (newTitle) => {
+		this.setState({ newMarker: { ...this.state.newMarker, title: newTitle } });
+	};
+
+	handleInputDescriptionChange = (newDescription) => {
+		this.setState({ newMarker: { ...this.state.newMarker, description: newDescription } });
 	};
 
 	constructor(props) {
@@ -83,43 +102,28 @@ export class M08_Mapes extends React.Component {
 						latitudeDelta: 0.0622,
 						longitudeDelta: 0.0121,
 					}}
+					onPress={(e) => this.handleClick({ marker: e.nativeEvent.coordinate })}
 				>
-					<MapView.Marker
-						coordinate={{
-							latitude: this.coords[0].lat,
-							longitude: this.coords[0].lng,
-						}}
-						title={"sortida"}
-						description={"punt A"}
-					>
-						<Callout onPress={() => this.props.navigation.navigate("Camera")}>
-							<Text style={{ width: 30, marginBottom: 7, height: 30 }}>
-								<Image style={{ width: 20, height: 20 }} source={require("../../assets/camara.png")}></Image>
-							</Text>
-							<Text style={styles.titulo}>Restaurante Juan PaTan</Text>
-							<Text style={styles.description}>12 Carrer Comptal</Text>
-						</Callout>
-					</MapView.Marker>
+					{this.state.arrayMarkers.map((marker, index) => (
+						<MapView.Marker
+							key={index}
+							coordinate={{
+								latitude: marker.latitude || 0,
+								longitude: marker.longitude || 0,
+							}}
+						>
+							<Callout onPress={() => this.props.navigation.navigate("Camera")}>
+								<Text style={{ width: 30, marginBottom: 7, height: 30 }}>
+									<Image style={{ width: 20, height: 20 }} source={require("../../assets/camara.png")}></Image>
+								</Text>
+								<Text style={styles.titulo}>{marker.title}</Text>
+								<Text style={styles.description}>{marker.description}</Text>
+							</Callout>
+						</MapView.Marker>
+					))}
 
-					<MapView.Marker
-						coordinate={{
-							latitude: this.coords[1].lat,
-							longitude: this.coords[1].lng,
-						}}
-					>
-						<Callout onPress={() => this.props.navigation.navigate("Camera")}>
-							<Text style={{ width: 30, marginBottom: 7, height: 30 }}>
-								<Image style={{ width: 20, height: 20 }} source={require("../../assets/camara.png")}></Image>
-							</Text>
-							<Text style={styles.titulo}>Centro Comercial KYS</Text>
-							<Text style={styles.description}>2 Carrer de Colom</Text>
-						</Callout>
-					</MapView.Marker>
 					<MapView.Polyline
-						coordinates={[
-							{ latitude: 41.390205, longitude: 2.174007 },
-							{ latitude: 41.380205, longitude: 2.175007 },
-						]}
+						coordinates={this.state.arrayMarkers}
 						strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
 						strokeColors={[
 							"#7F0000",
@@ -133,13 +137,10 @@ export class M08_Mapes extends React.Component {
 					/>
 				</MapView>
 				<View style={{ position: "absolute", top: 730, left: 20, right: 0, bottom: 0 }}>
-					<Pressable style={styles.buttons} onPress={this.showDialog}>
-						<Image style={styles.camara} source={require("../../assets/add.png")}></Image>
-					</Pressable>
 					<Dialog.Container visible={this.state.dialogVisible}>
 						<Dialog.Title>Añade un nuevo marcador</Dialog.Title>
-						<Dialog.Input placeholder="Escribe aquí el título" />
-						<Dialog.Input placeholder="Escribe aquí una descripción" />
+						<Dialog.Input placeholder="Escribe aquí el título" onChangeText={this.handleInputTitleChange} value={this.state.newMarker.title} />
+						<Dialog.Input placeholder="Escribe aquí una descripción" onChangeText={this.handleInputDescriptionChange} value={this.state.newMarker.description} />
 						<Dialog.Description>Escribe un título y una descripción para guarlarlo.</Dialog.Description>
 						<Dialog.Button label="Cancel" onPress={this.handleCancel} />
 						<Dialog.Button label="Guardar" onPress={this.handleSave} />
