@@ -50,8 +50,10 @@ export class M08_Mapes extends React.Component {
 			latitude: 0,
 			title: "",
 			description: "",
+			photo: "",
 		},
 		arrayMarkers: [],
+		ruta: new Ruta(),
 	};
 
 	showDialog = () => {
@@ -63,6 +65,8 @@ export class M08_Mapes extends React.Component {
 	};
 
 	handleSave = () => {
+		let newPunto = new Punto(this.state.newMarker.title, this.state.newMarker.description, this.state.newMarker.longitude, this.state.newMarker.latitude, this.state.newMarker.photo);
+		this.state.ruta.arrayPuntos.push(newPunto);
 		db = SQLite.openDatabase("db.db");
 		db.transaction((tx) => {
 			tx.executeSql("create table if not exists marcador (id integer primary key not null, titulo text, descripcion text);");
@@ -153,6 +157,24 @@ export class M08_Mapes extends React.Component {
 				</View>
 			</View>
 		);
+	}
+}
+
+class Punto {
+	constructor(titulo, descripcion, longitud, latitud, foto) {
+		this.titulo = titulo;
+		this.descripcion = descripcion;
+		this.longitud = longitud;
+		this.latitud = latitud;
+		this.foto = foto;
+	}
+}
+
+class Ruta {
+	arrayPuntos = [];
+
+	constructor() {
+		arrayPuntos = [];
 	}
 }
 /*
