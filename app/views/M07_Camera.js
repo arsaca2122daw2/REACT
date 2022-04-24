@@ -63,10 +63,10 @@ export class M07_Camera extends React.Component {
 
 			db = SQLite.openDatabase("db.db");
 			db.transaction((tx) => {
-				tx.executeSql("create table if not exists reactmapa (id integer primary key not null, imagen text,titulo text, descripcion text);");
+				tx.executeSql("create table if not exists proyectomapa (id integer primary key not null, imagen text,titulo text, descripcion text);");
 				db.transaction((tx) => {
-					tx.executeSql("insert into reactmapa (imagen) values (?)", [this.state.path]);
-					tx.executeSql("select imagen from reactmapa", [], (_, { rows }) => console.log(""));
+					tx.executeSql("insert into proyectomapa (imagen) values (?)", [this.state.path]);
+					tx.executeSql("select imagen from proyectomapa", [], (_, { rows }) => console.log(rows));
 				});
 			});
 			this.props.navigation.navigate("Mapes", { imagen: data.uri });

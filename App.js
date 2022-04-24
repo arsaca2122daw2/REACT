@@ -1,13 +1,14 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { M06_Home } from "./app/views/M06_Home_routing";
-import { M06_Detalls } from "./app/views/M06_Detalls_routing";
 import { M07_Camera } from "./app/views/M07_Camera";
 import { M08_Mapes } from "./app/views/M08_Mapes";
-import { M09_Sqlite } from "./app/views/M09_Sqlite";
 import { M10_Ayuda } from "./app/views/M10_Ayuda";
+import * as Location from "expo-location";
+
 /**
  * Modificacions al component principal d'entrada de React
  * per incloure encaminaments, però no components
@@ -17,15 +18,30 @@ import { M10_Ayuda } from "./app/views/M10_Ayuda";
 
 const Stack = createStackNavigator();
 
+function MapLocation() {
+	const [location, setLocation] = useState(null);
+	useEffect(() => {
+		(async () => {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== "granted") {
+				setErrorMsg("Permission to access location was denied");
+				return;
+			}
+
+			let location = await Location.getCurrentPositionAsync({});
+			setLocation(location);
+		})();
+	}, []);
+	return <M08_Mapes></M08_Mapes>;
+}
+
 function App() {
 	return (
 		<NavigationContainer>
 			<Stack.Navigator initialRouteName="Home">
 				<Stack.Screen name="Home" component={M06_Home} />
-				<Stack.Screen name="Detall" component={M06_Detalls} />
 				<Stack.Screen name="Camera" component={M07_Camera} />
-				<Stack.Screen name="Mapes" component={M08_Mapes} />
-				<Stack.Screen name="SQLite" component={M09_Sqlite} />
+				<Stack.Screen name="Mapes" component={MapLocation} />
 				<Stack.Screen name="Ayuda" component={M10_Ayuda} />
 			</Stack.Navigator>
 		</NavigationContainer>

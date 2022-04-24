@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { StyleSheet, Dimensions, Text, View, Pressable, Image, Alert } from "react-native";
 import { Callout } from "react-native-maps";
 import Dialog from "react-native-dialog";
@@ -52,6 +52,9 @@ export class M08_Mapes extends React.Component {
 			description: "",
 			photo: "",
 		},
+		coordenadas: 0,
+		coordenadasX: 0,
+		coordenadasY: 0,
 		arrayMarkers: [],
 		ruta: new Ruta(),
 	};
@@ -69,20 +72,18 @@ export class M08_Mapes extends React.Component {
 		this.state.ruta.arrayPuntos.push(newPunto);
 		db = SQLite.openDatabase("db.db");
 		db.transaction((tx) => {
-			tx.executeSql("create table if not exists reactmapa (id integer primary key not null, imagen text,titulo text, descripcion text);");
+			tx.executeSql("create table if not exists proyectomapa (id integer primary key not null, imagen text,titulo text, descripcion text);");
 			db.transaction((tx) => {
-				tx.executeSql("insert into reactmapa (titulo, descripcion) values (?,?)", [this.state.newMarker.title, this.state.newMarker.description]);
-				tx.executeSql("select * from reactmapa", [], (_, { rows }) => console.log(""));
+				tx.executeSql("insert into proyectomapa (titulo, descripcion) values (?,?)", [this.state.newMarker.title, this.state.newMarker.description]);
+				tx.executeSql("select * from proyectomapa", [], (_, { rows }) => console.log(rows));
 			});
 		});
+
 		this.setState({ dialogVisible: false, arrayMarkers: [...this.state.arrayMarkers, this.state.newMarker] });
 	};
 
 	handleClick = (marker) => {
 		this.setState({ dialogVisible: true, newMarker: marker.marker });
-		// console.log(this.state.newMarker.photo);
-		// console.log("-------------------------------");
-		console.log(this.props.route.params.imagen);
 	};
 
 	handleInputTitleChange = (newTitle) => {
@@ -101,16 +102,7 @@ export class M08_Mapes extends React.Component {
 		return (
 			<View style={styles.container}>
 				<Text> Mapa </Text>
-				<MapView
-					style={styles.mapStyle}
-					initialRegion={{
-						latitude: this.coords[0].lat,
-						longitude: this.coords[0].lng,
-						latitudeDelta: 0.0622,
-						longitudeDelta: 0.0121,
-					}}
-					onPress={(e) => this.handleClick({ marker: e.nativeEvent.coordinate })}
-				>
+				<MapView style={styles.mapStyle} showsMyLocationButton={true} showsUserLocation={true} onPress={(e) => this.handleClick({ marker: e.nativeEvent.coordinate })}>
 					{this.state.arrayMarkers.map((marker, index) => (
 						<MapView.Marker
 							key={index}
@@ -122,7 +114,7 @@ export class M08_Mapes extends React.Component {
 							<Callout onPress={() => this.props.navigation.navigate("Camera")}>
 								<Text style={{ width: 70, height: 100 }}>
 									<Image style={{ width: 10, height: 10 }} source={require("../../assets/camara.png")}></Image>
-									<Image style={{ width: 70, height: 100 }} source={{ uri: this.props.route.params.imagen }}></Image>
+									<Image style={{ width: 70, height: 100 }} source={require("../../assets/camara.png")}></Image>
 								</Text>
 								<Text style={styles.titulo}>{marker.title}</Text>
 								<Text style={styles.description}>{marker.description}</Text>
@@ -166,10 +158,12 @@ class Punto {
 }
 
 class Ruta {
-	arrayPuntos = [];
+	constructor(arrayPuntos) {
+		this.arrayPuntos = arrayPuntos;
+	}
 
-	constructor() {
-		arrayPuntos = [];
+	pushMarker(marker) {
+		this.arrayPuntos.push(marker);
 	}
 }
 /*
