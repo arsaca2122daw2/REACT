@@ -2,6 +2,7 @@ import React from "react";
 import { TouchableHighlight, TouchableOpacity, StyleSheet, Image, Text, View } from "react-native";
 import * as Permissions from "expo-permissions";
 import { Camera } from "expo-camera";
+import * as SQLite from "expo-sqlite";
 
 /**
  * Classe que hereta de Component i que implementa un component
@@ -56,10 +57,20 @@ export class M07_Camera extends React.Component {
 
 	ferFoto = async () => {
 		try {
-			const data = await this.camera.current.takePictureAsync();
+			const data = await this.camera.takePictureAsync();
+
 			this.setState({ path: data.uri });
-			this.props.updateImage(data.uri);
-			alert("Path to image: " + data.uri);
+
+			db = SQLite.openDatabase("db.db");
+			db.transaction((tx) => {
+				tx.executeSql("create table if not exists reactmapa (id integer primary key not null, imagen text,titulo text, descripcion text);");
+				db.transaction((tx) => {
+					tx.executeSql("insert into reactmapa (imagen) values (?)", [this.state.path]);
+					tx.executeSql("select imagen from reactmapa", [], (_, { rows }) => console.log(""));
+				});
+			});
+			this.props.navigation.navigate("Mapes", { imagen: data.uri });
+			//this.props.updateImage(data.uri);
 		} catch (err) {
 			console.log("err: ", err);
 		}
@@ -78,7 +89,13 @@ export class M07_Camera extends React.Component {
 		} else {
 			return (
 				<View style={{ flex: 1 }}>
-					<Camera style={{ flex: 1 }} type={this.state.type}>
+					<Camera
+						ref={(cam) => {
+							this.camera = cam;
+						}}
+						style={{ flex: 1 }}
+						type={this.state.type}
+					>
 						<View
 							style={{
 								flex: 1,

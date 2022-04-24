@@ -69,10 +69,10 @@ export class M08_Mapes extends React.Component {
 		this.state.ruta.arrayPuntos.push(newPunto);
 		db = SQLite.openDatabase("db.db");
 		db.transaction((tx) => {
-			tx.executeSql("create table if not exists marcador (id integer primary key not null, titulo text, descripcion text);");
+			tx.executeSql("create table if not exists reactmapa (id integer primary key not null, imagen text,titulo text, descripcion text);");
 			db.transaction((tx) => {
-				tx.executeSql("insert into marcador (titulo, descripcion) values (?,?)", [this.state.newMarker.title, this.state.newMarker.description]);
-				tx.executeSql("select * from marcador", [], (_, { rows }) => console.log(JSON.stringify(rows)));
+				tx.executeSql("insert into reactmapa (titulo, descripcion) values (?,?)", [this.state.newMarker.title, this.state.newMarker.description]);
+				tx.executeSql("select * from reactmapa", [], (_, { rows }) => console.log(""));
 			});
 		});
 		this.setState({ dialogVisible: false, arrayMarkers: [...this.state.arrayMarkers, this.state.newMarker] });
@@ -80,6 +80,9 @@ export class M08_Mapes extends React.Component {
 
 	handleClick = (marker) => {
 		this.setState({ dialogVisible: true, newMarker: marker.marker });
+		// console.log(this.state.newMarker.photo);
+		// console.log("-------------------------------");
+		console.log(this.props.route.params.imagen);
 	};
 
 	handleInputTitleChange = (newTitle) => {
@@ -117,28 +120,16 @@ export class M08_Mapes extends React.Component {
 							}}
 						>
 							<Callout onPress={() => this.props.navigation.navigate("Camera")}>
-								<Text style={{ width: 30, marginBottom: 7, height: 30 }}>
-									<Image style={{ width: 20, height: 20 }} source={require("../../assets/camara.png")}></Image>
+								<Text style={{ width: 70, height: 100 }}>
+									<Image style={{ width: 10, height: 10 }} source={require("../../assets/camara.png")}></Image>
+									<Image style={{ width: 70, height: 100 }} source={{ uri: this.props.route.params.imagen }}></Image>
 								</Text>
 								<Text style={styles.titulo}>{marker.title}</Text>
 								<Text style={styles.description}>{marker.description}</Text>
 							</Callout>
 						</MapView.Marker>
 					))}
-
-					<MapView.Polyline
-						coordinates={this.state.arrayMarkers}
-						strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
-						strokeColors={[
-							"#7F0000",
-							"#00000000", // no color, creates a "long" gradient between the previous and next coordinate
-							"#B24112",
-							"#E5845C",
-							"#238C23",
-							"#7F0000",
-						]}
-						strokeWidth={6}
-					/>
+					<MapView.Polyline coordinates={this.state.arrayMarkers} strokeColor="#000" strokeColors={["#7F0000", "#00000000", "#B24112", "#E5845C", "#238C23", "#7F0000"]} strokeWidth={6} />
 				</MapView>
 				<View style={{ position: "absolute", top: 730, left: 20, right: 0, bottom: 0 }}>
 					<Dialog.Container visible={this.state.dialogVisible}>
@@ -161,11 +152,15 @@ export class M08_Mapes extends React.Component {
 }
 
 class Punto {
-	constructor(titulo, descripcion, longitud, latitud, foto) {
+	constructor(titulo, descripcion, longitud, latitud /*foto*/) {
 		this.titulo = titulo;
 		this.descripcion = descripcion;
 		this.longitud = longitud;
 		this.latitud = latitud;
+		//this.foto = foto;
+	}
+
+	setImage(foto) {
 		this.foto = foto;
 	}
 }
