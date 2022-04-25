@@ -113,7 +113,6 @@ export class M08_Mapes extends React.Component {
 						>
 							<Callout onPress={() => this.props.navigation.navigate("Camera")}>
 								<Text style={{ width: 70, height: 100 }}>
-									<Image style={{ width: 10, height: 10 }} source={require("../../assets/camara.png")}></Image>
 									<Image style={{ width: 70, height: 100 }} source={require("../../assets/camara.png")}></Image>
 								</Text>
 								<Text style={styles.titulo}>{marker.title}</Text>
